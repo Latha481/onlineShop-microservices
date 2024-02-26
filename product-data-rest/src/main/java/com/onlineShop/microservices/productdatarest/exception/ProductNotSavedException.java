@@ -7,8 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ProductNotSavedException extends RuntimeException{
     public ProductNotSavedException() {
     }
-
-    public ProductNotSavedException(String message) {
-        super(message);
-    }
 }

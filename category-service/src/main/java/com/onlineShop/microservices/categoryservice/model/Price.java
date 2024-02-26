@@ -5,8 +5,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 @Builder
 public class Price {
@@ -17,6 +15,6 @@ public class Price {
     private String currency;
 
     @NotNull
-    private BigDecimal amount;
+    private Double amount;
 
 }

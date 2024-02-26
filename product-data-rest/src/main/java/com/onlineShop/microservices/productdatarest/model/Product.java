@@ -41,8 +41,4 @@ public class Product {
     @OneToOne(cascade = CascadeType.ALL, targetEntity = Inventory.class)
     private Inventory inventoryDetails;
 
-//    @JoinColumn(name = "PRODUCT_CATEGORY_ID",referencedColumnName = "CATEGORY_ID")
-//    @ManyToOne(cascade = CascadeType.ALL, targetEntity = Categories.class)
-//    private Categories category;
-
 }

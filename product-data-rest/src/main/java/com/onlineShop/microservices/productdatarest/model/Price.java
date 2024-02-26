@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 
 @Builder
 @NoArgsConstructor
@@ -29,6 +28,6 @@ public class Price {
 
     @NotNull
     @Column(name = "CURRENCY_AMOUNT")
-    private BigDecimal amount;
+    private Double amount;
 
 }

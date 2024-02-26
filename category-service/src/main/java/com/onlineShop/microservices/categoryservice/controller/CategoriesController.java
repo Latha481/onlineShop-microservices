@@ -1,128 +1,84 @@
 package com.onlineShop.microservices.categoryservice.controller;
 
-import com.onlineShop.microservices.categoryservice.exception.CategoryNotFoundException;
-import com.onlineShop.microservices.categoryservice.exception.ProductNotFoundException;
-import com.onlineShop.microservices.categoryservice.exception.ProductNotSavedException;
+import ch.qos.logback.core.util.DefaultInvocationGate;
 import com.onlineShop.microservices.categoryservice.model.Categories;
+import com.onlineShop.microservices.categoryservice.model.Inventory;
+import com.onlineShop.microservices.categoryservice.model.Price;
 import com.onlineShop.microservices.categoryservice.model.Product;
-import com.onlineShop.microservices.categoryservice.proxy.CategoriesRepositoryProxy;
+import com.onlineShop.microservices.categoryservice.proxy.ProductServiceProxy;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @RestController
 public class CategoriesController {
 
     @Autowired
-    private CategoriesRepositoryProxy categoriesRepository;
+    private ProductServiceProxy productServiceProxy;
 
-//    @Autowired
-//    private ProductRepositoryProxy productRepository;
+    private final Logger logger = LoggerFactory.getLogger(CategoriesController.class);
 
-
-
-    @PostMapping("/addProducts/feign")
-    public ResponseEntity <List<Categories>> addProducts (@Valid @RequestBody List <Categories> categories) throws Exception {
-
-        ResponseEntity<List<Categories>> a = categoriesRepository.addProducts(categories);
-        return a;
+    @PostMapping("/addProducts")
+    public ResponseEntity<Object> addProductsAndCategories(@Valid @RequestBody List<Categories> categories) {
+        logger.info("Executing addProductsAndCategories api");
+        return productServiceProxy.addProducts(categories);
     }
 
-//        try{
-//            categories.forEach(category -> categoriesRepository.save(category));
-//            return ResponseEntity.status(HttpStatus.OK).body(categories);
-//
-//        }
-//        catch (Exception e){
-//            throw new ProductNotSavedException();
-//        }
+    @PostMapping("/addProductsToExistingCategory")
+    public ResponseEntity<Object> addAdditionalProducts(@RequestBody Product product, @RequestParam String categoryName) {
 
+        logger.info("Executing addAdditionalProducts api");
 
-//    @PostMapping("/addProductsToExistingCategory")
-//    public ResponseEntity<Product> addAdditionalProducts (@RequestBody Product product, @RequestParam String categoryName) throws Exception{
-//
-//        try{
-//            Categories categoryDetail = categoriesRepository.findByCategoryName(categoryName);
-//            categoryDetail.getProducts().add(product);
-//            categoriesRepository.save(categoryDetail);
-//            return ResponseEntity.created(null).build();
-//        }
-//        catch (Exception e){ //in case invalid product object
-//            throw new ProductNotSavedException();
-//        }
-//    }
+        return productServiceProxy.addProductsToExistingCategory(product, categoryName);
 
-//    @GetMapping("/getAllProductsForCategory/{categoryName}")
-//    public List<Product> retrieveAllProductsForCategory(@PathVariable String categoryName) throws Exception{
-//        try{
-//    Categories categoryDetail = categoriesRepository.findByCategoryName(categoryName);
-//
-//    return categoryDetail.getProducts();
-//        }
-//        catch (Exception e){
-//            throw new CategoryNotFoundException();
-//        }
-//    }
-//
-//    @GetMapping("/getAllProductsForInventoryCountOrPriceValue/{categoryName}")
-//    public List<Product> retrieveProductsForCategoryAndInventoryCountOrPrice(@PathVariable String categoryName,
-//                                                                      @RequestParam Integer inventoryCount ,
-//                                                                      @RequestParam BigDecimal priceValue) throws Exception{
-//        try{
-//            Categories categoryDetail = categoriesRepository.findByCategoryName(categoryName);
-//
-//            List<Product> allProducts =  categoryDetail.getProducts();
-//
-//            return   categoryDetail.getProducts().stream()
-//                    .filter(product -> checkIfProductToBeAdded(priceValue,product.getPrice().getAmount()))
-//                    .filter(product -> checkIfProductToBeAdded(inventoryCount,product.getInventoryDetails().getAvailable()))
-//                    .collect(Collectors.toList());
-//        }
-//        catch (Exception e) {
-//            throw new ProductNotFoundException();
-//        }
-//
-//    }
-//
-//    public Boolean checkIfProductToBeAdded(BigDecimal value , BigDecimal productValue){
-//        return (value == null) || productValue.compareTo(value) >= 0;
-//    }
-//
-//    public Boolean checkIfProductToBeAdded(Integer value , Integer productValue){
-//        return (value == null) || value < productValue || value.equals(productValue);
-//    }
-//
-//    @DeleteMapping("/deleteProduct")
-//    public void deleteProducts(@RequestParam Integer productId) throws Exception{
-//        try{
-//            productRepository.deleteById(productId);
-//        }
-//        catch(Exception e)
-//        {
-//            throw new ProductNotFoundException();
-//        }
-//    }
+    }
 
-//    @PatchMapping("/updateProduct")
-//    public  String updateProducts(@RequestBody Product product, @PathVariable Integer productId){
-//
-//        Optional<Product> existingProduct = productRepository.findById(productId);
-//        existingProduct.get().
-//
-//
-//
-//        productRepository.save(existingProduct);
-//
-//        Optional<Categories> a = categoriesRepository.findById(product.getCategory().getCategoryId());
-//
-//        return "done";
-//    }
+    @GetMapping("/getAllProductsForCategory/{categoryName}")
+    @Retry(name = "gettingProducts", fallbackMethod = "serviceUnavailable")
+    public ResponseEntity<Object> retrieveAllProductsForCategory(@PathVariable String categoryName) {
+
+        logger.info("Executing retrieveAllProductsForCategory api");
+        return productServiceProxy.retrieveAllProductsForCategory(categoryName);
+    }
+
+    @GetMapping("/getAllProductsForInventoryCountOrPriceValue/{categoryName}")
+    public ResponseEntity<Object> retrieveProductsForCategoryAndInventoryCountOrPrice(@PathVariable String categoryName,
+                                                                             @RequestParam Integer inventoryCount,
+                                                                             @RequestParam Double priceValue) {
+
+        logger.info("Executing retrieveProductsForCategoryAndInventoryCountOrPrice api");
+        return productServiceProxy.retrieveProductsForCategoryAndInventoryCountOrPrice(categoryName, inventoryCount, priceValue);
+
+    }
+
+    @DeleteMapping("/deleteProduct")
+    public ResponseEntity<Object> deleteProducts(@RequestParam Integer productId) {
+        logger.info("Executing deleteProducts api");
+        return productServiceProxy.deleteProducts(productId);
+
+    }
+
+    @PatchMapping("/updateProduct")
+    public ResponseEntity<Object> updateProducts(@RequestBody Product product, @PathVariable Integer productId) {
+        logger.info("Executing updateProducts api");
+        return productServiceProxy.updateProducts(product, productId);
+    }
+
+    public ResponseEntity<Object> serviceUnavailable(Exception ex) {
+    Product p = Product.builder()
+            .price(Price.builder().amount(Double.NaN).build())
+            .inventoryDetails(Inventory.builder().available(0).reserved(0).total(0).build())
+            .build();
+        return new ResponseEntity<Object>(p, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 
 
 }

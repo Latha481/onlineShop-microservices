@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface CategoriesRepository extends CrudRepository<Categories,Integer> {
 
     @RestResource
-     Categories findByCategoryName(@RequestParam String categoryName);
+     Optional<Categories> findByCategoryName(@RequestParam String categoryName);
 
 }

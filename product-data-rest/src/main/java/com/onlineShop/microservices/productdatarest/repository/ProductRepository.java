@@ -12,6 +12,4 @@ import java.util.Optional;
 @RepositoryRestResource(path = "products")
 public interface ProductRepository extends CrudRepository<Product,Integer> {
 
-       //List <Product> (@RequestParam Integer categoryId);
-
 }

@@ -7,8 +7,4 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ProductNotFoundException extends RuntimeException{
     public ProductNotFoundException() {
     }
-
-    public ProductNotFoundException(String message) {
-        super(message);
-    }
 }
