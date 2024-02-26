@@ -1,5 +1,6 @@
 package com.onlineShop.microservices.categoryservice.model;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,8 +9,10 @@ import lombok.Data;
 public class Attribute {
     private Integer id;
 
+    @NotBlank
     private String attributeName;
 
+    @NotBlank
     private String attributeValue;
 
 }

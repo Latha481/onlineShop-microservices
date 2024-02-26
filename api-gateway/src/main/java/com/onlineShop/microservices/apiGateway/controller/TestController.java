@@ -1,4 +1,4 @@
-package com.onlineShop.microservices.apiGateway;
+package com.onlineShop.microservices.apiGateway.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
 
-    @GetMapping("/test")
+    @GetMapping("/admin/test")
     public String testing(){
         return "Heyyyy";
     }
-    @GetMapping("/verifying")
+    @GetMapping("/admin/verifying")
     public String testingAdmin(){
         return "Heyyyy Test";
     }
-    @GetMapping("/checkingg")
+    @GetMapping("/user/checkingg")
     public String testingPostinh(){
-        return "Heyyyy Admin";
+        return "Heyyyy Not Admin";
     }
 
 }

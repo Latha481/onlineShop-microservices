@@ -73,7 +73,7 @@ if(categoryDetail.isPresent()){
     }
 }
 else{
-    return  CustomResponseHandler.generateResponse(HttpStatus.NOT_FOUND, "Success", "Category not found");
+    return  CustomResponseHandler.generateResponse(HttpStatus.OK, "Success", "Category not found");
 }
         }
         catch (Exception e) {

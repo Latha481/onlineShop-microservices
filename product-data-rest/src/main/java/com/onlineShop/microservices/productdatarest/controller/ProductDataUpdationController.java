@@ -63,7 +63,7 @@ public class ProductDataUpdationController {
                 return CustomResponseHandler.generateResponse(HttpStatus.CREATED, "Success", savedCategory);
             }
             else{
-                return CustomResponseHandler.generateResponse(HttpStatus.NOT_FOUND, "Success", "Product Not Found");
+                return CustomResponseHandler.generateResponse(HttpStatus.OK, "Success", "Product Not Found");
             }
         }
         catch (Exception e){
@@ -80,7 +80,7 @@ public class ProductDataUpdationController {
                 return CustomResponseHandler.generateResponse(HttpStatus.OK, "Success", "Deleted Successfully");
             }
             else{
-                return CustomResponseHandler.generateResponse(HttpStatus.NOT_FOUND, "Success", "Product Not Found");
+                return CustomResponseHandler.generateResponse(HttpStatus.OK, "Success", "Product Not Found");
             }
         }
         catch(Exception e)
@@ -99,7 +99,7 @@ public class ProductDataUpdationController {
             Product savedProduct = productRepository.save(updatedProduct);
             return CustomResponseHandler.generateResponse(HttpStatus.PARTIAL_CONTENT, "Success", savedProduct);
         } else {
-            return CustomResponseHandler.generateResponse(HttpStatus.NOT_FOUND, "Success", "Product Not Found");
+            return CustomResponseHandler.generateResponse(HttpStatus.OK, "Success", "Product Not Found");
         }
     }
         catch(Exception e)

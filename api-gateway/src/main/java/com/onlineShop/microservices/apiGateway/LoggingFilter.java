@@ -42,4 +42,3 @@ public class LoggingFilter implements GlobalFilter {
 //
 //        return chain.filter(exchange);
 //    };
-}

@@ -1,5 +1,6 @@
 package com.onlineShop.microservices.categoryservice.model;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -15,6 +16,7 @@ public class Price {
     private String currency;
 
     @NotNull
+    @DecimalMin("0.0")
     private Double amount;
 
 }
